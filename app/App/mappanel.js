@@ -17,8 +17,7 @@ Ext.define('MyPath.mappanel',{
 					var obj = Ext.decode(response.responseText);					
 					callback(obj)		
 				}			
-			});	
-	
+			});		
 	},
 	gCode:function(addr, callback){	  
 				var geocoder = new google.maps.Geocoder();					
@@ -47,7 +46,7 @@ Ext.define('MyPath.mappanel',{
 					var win = Ext.create('MyPath.UploadLayer', {
 						mapContainer:me.map					})					
 					win.show();	
-					
+					me.map.controls[4].deactivate();
 				}	
 			},
 			{
@@ -56,28 +55,10 @@ Ext.define('MyPath.mappanel',{
 				icon:'./icons/annotate.png',
 				scale:'medium',
 				handler:function(){				
-					Ext.Msg.show({
-						title: 'Annotation',
-						msg: 'Please click a point on the map where you want to place your annotation',
-						buttons: Ext.MessageBox.OK,
-						fn:showResult,
-					});
-					
-					function showResult(btn){						
-						console.log(btn)
-						
-						
-						if (btn=='ok'){
-							
-						}
-					};
-					
-					
-					/* var me = this.up('panel');
-					var win = Ext.create('MyPath.Annotate', {
-						mapContainer:me.map					})					
-					win.show();	 */
-					
+					var me = this.up('panel');					 
+					 me.map.controls[4].activate()
+								 
+					 //me.fireEvent('click');
 				}	
 			},
 				{
@@ -108,8 +89,8 @@ Ext.define('MyPath.mappanel',{
 					new OpenLayers.Control.Navigation(),					
 					new OpenLayers.Control.Zoom(),
 					new OpenLayers.Control.MousePosition(),
-					new OpenLayers.Control.LayerSwitcher(),
-										
+					new OpenLayers.Control.LayerSwitcher(),					
+					
 				],
 				
 				fallThrough: true,							
@@ -132,7 +113,13 @@ Ext.define('MyPath.mappanel',{
 		});	
 
 		var Location2 = new OpenLayers.Layer.Vector('Gcode', {
-		 displayInLayerSwitcher: false,		
+		
+			style: new OpenLayers.StyleMap({'default':{
+							strokeWidth: 5,
+							strokeColor: '#005aff',
+							label:'test'	
+					}}),
+			displayInLayerSwitcher: false,		
 		});			
 		
 		
@@ -143,19 +130,70 @@ Ext.define('MyPath.mappanel',{
 		
 		
 		map.events.register("mousemove", map, function (e) {            
-			/* var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
-			//console.log(point.lon, point.lat)
-			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
-			console.log(pos);*/
-			OpenLayers.Strategy.Refresh
+			
 		}); 
 		
 		
+		//
+		 var control = new OpenLayers.Control.DrawFeature(
+			map.layers[2],
+			OpenLayers.Handler.Point, {
+			featureAdded: function(e) {
+			 /*  console.log(feature);	
+			  feature.attributes.text = prompt('Write here:', '');
+			  feature.style.label = feature.attributes.text;
+			  feature.layer.drawFeature(feature); */
+			  
+			  //
+			  Ext.create('Ext.window.Window',{
+				title:'test',
+				items:[
+						new Ext.form.FormPanel({
+							items:[{
+								xtype: "textarea",
+								name: "label",
+								value: "",
+								fieldLabel: "Text "
+							},{
+								xtype: "combo",
+								store: [10,12,14,16,18,20,22,24,26,28,30],
+								displayField: "fontsize",
+								fieldLabel: "Font size ",
+								typeAhead: true,
+								mode: "local",
+								triggerAction: "all",
+								editable: false,
+							}],
+							buttons: [{
+								text: "Ok",
+								handler: function() {
+									var me= this.up('form');
+									var labelValue = me.items.items[0].getValue(); //get the typed  text
+									var fontSize = me.items.items[1].getValue(); //:get the  selected font size
+									e.style = {label: labelValue, labelSelect: true, fontSize:fontSize, fontColor:'#f0147f'}; //labelSelect allows to drag the text
+									me.up('panel').close();									
+									map.layers[2].redraw(); //Refresh needed to apply the label
+								}
+							}]
+						})
+				
+				
+				]
+				
+				
+			  }).show();
+			  //
+			}
+		  }
+		 ); 
+		 map.addControl(control)
 		
+		//
 		map.events.register('click', map, function(e){		
-			
+						
 			var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
 			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
+
 			
 		
 		});  
@@ -169,6 +207,7 @@ Ext.define('MyPath.mappanel',{
 				}
 			]			
 		});		
+	
 		this.callParent();   
     }	
 	
