@@ -65,7 +65,6 @@
 										'externalProjection': new OpenLayers.Projection("EPSG:4326")
 									});
 									
-									
 									var vectorLayer = new OpenLayers.Layer.Vector(file.name, {												
 											projection: new OpenLayers.Projection("EPSG:4326"),
 											//strategies: [new OpenLayers.Strategy.Fixed()],												

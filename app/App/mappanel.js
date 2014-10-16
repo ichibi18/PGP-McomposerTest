@@ -45,8 +45,7 @@ Ext.define('MyPath.mappanel',{
 					var me = this.up('panel');
 					var win = Ext.create('MyPath.UploadLayer', {
 						mapContainer:me.map					})					
-					win.show();	
-					me.map.controls[4].deactivate();
+					win.show();					
 				}	
 			},
 			{
@@ -56,9 +55,7 @@ Ext.define('MyPath.mappanel',{
 				scale:'medium',
 				handler:function(){				
 					var me = this.up('panel');					 
-					 me.map.controls[4].activate()
-								 
-					 //me.fireEvent('click');
+					 me.map.controls[5].activate();				 
 				}	
 			},
 				{
@@ -70,16 +67,12 @@ Ext.define('MyPath.mappanel',{
 					var me = this.up('panel');
 					var win = Ext.create('MyPath.UploadLayer', {
 						mapContainer:me.map					})					
-					win.show();	
-					
+					win.show();					
 				}	
 			}
 		
 		]
-	},
-	
-	
-	
+	},	
 	initComponent:function(){		
 	
 		var popup, me=this 			
@@ -120,32 +113,26 @@ Ext.define('MyPath.mappanel',{
 							label:'test'	
 					}}),
 			displayInLayerSwitcher: false,		
-		});			
-		
-		
+		});		
 		
 		map.addLayers([pgp_basemap_cache, Location, Location2]);		
-		map.zoomToMaxExtent()		
-		
-		
+		map.zoomToMaxExtent()				
 		
 		map.events.register("mousemove", map, function (e) {            
 			
-		}); 
+		}); 	
+		
+		//drag feature control
+		var drag = new OpenLayers.Control.DragFeature(map.layers[2]);
+		map.addControl(drag);
 		
 		
-		//
-		 var control = new OpenLayers.Control.DrawFeature(
+		//Insert label control
+		var control = new OpenLayers.Control.DrawFeature(
 			map.layers[2],
 			OpenLayers.Handler.Point, {
 			featureAdded: function(e) {
-			 /*  console.log(feature);	
-			  feature.attributes.text = prompt('Write here:', '');
-			  feature.style.label = feature.attributes.text;
-			  feature.layer.drawFeature(feature); */
-			  
-			  //
-			  Ext.create('Ext.window.Window',{
+			    Ext.create('Ext.window.Window',{
 				title:'test',
 				items:[
 						new Ext.form.FormPanel({
@@ -170,31 +157,26 @@ Ext.define('MyPath.mappanel',{
 									var me= this.up('form');
 									var labelValue = me.items.items[0].getValue(); //get the typed  text
 									var fontSize = me.items.items[1].getValue(); //:get the  selected font size
-									e.style = {label: labelValue, labelSelect: true, fontSize:fontSize, fontColor:'#f0147f'}; //labelSelect allows to drag the text
+									e.style = {label: labelValue, labelSelect: true, fontSize:fontSize, fontColor:'#000000'}; //labelSelect allows to drag the text
 									me.up('panel').close();									
 									map.layers[2].redraw(); //Refresh needed to apply the label
+									map.controls[5].deactivate();
+									map.controls[4].activate();
 								}
 							}]
 						})
-				
-				
-				]
-				
-				
-			  }).show();
-			  //
+				]			
+			  }).show();			  
 			}
 		  }
-		 ); 
+		); 
 		 map.addControl(control)
 		
 		//
-		map.events.register('click', map, function(e){		
+		map.events.register('click', map, function(e){	
 						
 			var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
 			var pos = new OpenLayers.LonLat(point.lon,point.lat).transform('EPSG:900913', 'EPSG:4326');
-
-			
 		
 		});  
 		
