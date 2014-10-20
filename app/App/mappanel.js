@@ -65,8 +65,8 @@ Ext.define('MyPath.mappanel',{
 				scale:'medium',
 				handler:function(){
 					var me = this.up('panel');
-					var win = Ext.create('MyPath.UploadLayer', {
-						mapContainer:me.map					})					
+					var win = Ext.create('MyPath.ExportMap', {
+						map:me.map					})					
 					win.show();					
 				}	
 			}
@@ -137,6 +137,7 @@ Ext.define('MyPath.mappanel',{
 				items:[
 						new Ext.form.FormPanel({
 							items:[{
+								padding:10,
 								xtype: "textarea",
 								name: "label",
 								value: "",
@@ -144,6 +145,7 @@ Ext.define('MyPath.mappanel',{
 							},{
 								xtype: "combo",
 								store: [10,12,14,16,18,20,22,24,26,28,30],
+								value:10,
 								displayField: "fontsize",
 								fieldLabel: "Font size ",
 								typeAhead: true,

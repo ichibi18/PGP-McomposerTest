@@ -11,7 +11,7 @@ paths: {
 Ext.application({
     name: 'OL3EXT4',	
 	requires:[
-		'MyPath.mappanel',								
+		'MyPath.mappanel','MyPath.ExportMap'							
 		],
     launch: function () {
 	
